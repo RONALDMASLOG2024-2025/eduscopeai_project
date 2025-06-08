@@ -4,42 +4,17 @@ import os
 import uuid
 import shutil
 from collections import defaultdict
-from pathlib import Path
-import csv
-from datetime import datetime
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['RESULT_FOLDER'] = 'static/results'
 
+# Ensure folders exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
 
+# Load YOLOv8 model
 model = YOLO('model/best.pt')
-
-# List of organisms your model can detect
-ORGANISM_LIST = [
-    'Amoeba', 'Euglena', 'Hydra', 'Paramecium',
-    'Rod_bacteria', 'Spherical_bacteria', 'Spiral_bacteria', 'Yeast'
-]
-
-# CSV logger
-def log_detection_csv(uid, counts, output_path='detections.csv'):
-    file_exists = os.path.isfile(output_path)
-    total = sum(counts.values())
-    row = {
-        'timestamp': datetime.now().isoformat(),
-        'filename': f"result_{uid}.png",
-        'total_detections': total,
-        'detected_anything': total > 0
-    }
-    for name in ORGANISM_LIST:
-        row[name] = counts.get(name, 0)
-    with open(output_path, 'a', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=row.keys())
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(row)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -49,46 +24,41 @@ def index():
     organism_counts = {}
 
     if request.method == 'POST':
-        file = request.files.get('image')
+        file = request.files['image']
         if file:
             ext = os.path.splitext(file.filename)[1]
             uid = uuid.uuid4().hex
             safe_filename = f"{uid}{ext}"
 
-            # Save uploaded file
+            # Save upload
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_filename)
             file.save(upload_path)
             upload_preview = '/' + upload_path.replace("\\", "/")
 
-            # Run YOLO detection
+            # Run YOLOv8
             results = model(upload_path, save=True, conf=0.3)
-            yolo_output_dir = Path(results[0].save_dir)
-            detected_img_path = next(yolo_output_dir.glob("*.*"), None)
 
-            # Process detection results
-            names = model.names
-            for box in results[0].boxes:
-                cls_id = int(box.cls[0])
-                label = names[cls_id]
-                organism_counts[label] = organism_counts.get(label, 0) + 1
+            # Actual output file saved by YOLO
+            yolo_output_path = results[0].save_dir + '/' + os.path.basename(results[0].path)
 
-            total = sum(organism_counts.values())
+            # Copy to results for web display
+            final_result_name = f"result_{safe_filename}"
+            final_result_path = os.path.join(app.config['RESULT_FOLDER'], final_result_name)
+            if os.path.exists(yolo_output_path):
+                shutil.copy(yolo_output_path, final_result_path)
+                result_image = '/' + final_result_path.replace("\\", "/")
 
-            if total > 0:
-                # Detections found – use YOLO result image
-                if detected_img_path and detected_img_path.exists():
-                    final_name = f"result_{uid}{detected_img_path.suffix}"
-                    final_path = os.path.join(app.config['RESULT_FOLDER'], final_name)
-                    shutil.copy(str(detected_img_path), final_path)
-                    result_image = '/' + final_path.replace("\\", "/") + f"?v={uuid.uuid4().hex}"
-                result_message = f"✅ {total} microorganisms detected."
+                # Count detected organisms
+                names = model.names
+                for box in results[0].boxes:
+                    cls_id = int(box.cls[0])
+                    label = names[cls_id]
+                    organism_counts[label] = organism_counts.get(label, 0) + 1
+
+                total = sum(organism_counts.values())
+                result_message = f"✅ {total} microorganisms detected in this image."
             else:
-                # No detections – show original image
-                result_image = upload_preview
-                result_message = "🧪 No microorganisms detected in this image."
-
-            # Log detection regardless
-            log_detection_csv(uid, organism_counts)
+                result_message = "❌ YOLOv8 result image not found."
 
     return render_template(
         'index.html',
