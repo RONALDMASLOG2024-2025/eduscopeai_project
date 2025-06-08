@@ -1,0 +1,4 @@
+timestamp,filename,total_detections,detected_anything,Amoeba,Euglena,Hydra,Paramecium,Rod_bacteria,Spherical_bacteria,Spiral_bacteria,Yeast
+2025-06-09T03:50:20.868169,result_924ca74cd07047ecbe9916dc12a63280.png,32,True,7,2,1,5,15,0,2,0
+2025-06-09T03:50:36.471130,result_436d6c783fba497099a8a63327fb0444.png,1,True,0,0,0,1,0,0,0,0
+2025-06-09T03:50:42.561994,result_7be56627f09f41d8a927cc8e296ec220.png,0,False,0,0,0,0,0,0,0,0
