@@ -10,6 +10,7 @@ import glob
 import json
 from openai import OpenAI  # Correct import for modern SDK
 from dotenv import load_dotenv
+from PIL import Image
 load_dotenv()
 
 # Initialize Flask
@@ -24,6 +25,13 @@ for path in STATIC_PATHS:
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
+
+
+# Resize uploaded image to 640x640 (YOLO default)
+img = Image.open(upload_path)
+img = img.resize((640, 640))
+img.save(upload_path)
+
 
 # Load YOLO model
 try:
