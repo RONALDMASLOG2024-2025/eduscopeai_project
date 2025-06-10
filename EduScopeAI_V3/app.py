@@ -17,11 +17,20 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['RESULT_FOLDER'] = 'static/results'
 
+STATIC_PATHS = [app.config['UPLOAD_FOLDER'], app.config['RESULT_FOLDER']]
+for path in STATIC_PATHS:
+    os.makedirs(path, exist_ok=True)
+
+
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
 
 # Load YOLO model
-model = YOLO('model/best.pt')
+try:
+    model = YOLO('model/best.pt')
+except Exception as e:
+    print("Model loading failed:", e)
+
 
 # Organism classes (same as your YOLO training labels)
 ORGANISM_LIST = [
