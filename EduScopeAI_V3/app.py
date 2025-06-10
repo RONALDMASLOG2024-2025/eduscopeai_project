@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from ultralytics import YOLO
 import os
 import uuid
@@ -7,7 +7,12 @@ from pathlib import Path
 import csv
 from datetime import datetime
 import glob
+import json
+from openai import OpenAI  # Correct import for modern SDK
+from dotenv import load_dotenv
+load_dotenv()
 
+# Initialize Flask
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['RESULT_FOLDER'] = 'static/results'
@@ -15,6 +20,7 @@ app.config['RESULT_FOLDER'] = 'static/results'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
 
+# Load YOLO model
 model = YOLO('model/best.pt')
 
 # Organism classes (same as your YOLO training labels)
@@ -52,7 +58,6 @@ def index():
     # Load extended explanations
     explanations = {}
     try:
-        import json
         with open("organism_explanations_extended.json", "r") as f:
             explanations = json.load(f)
     except Exception as e:
@@ -70,7 +75,7 @@ def index():
             file.save(upload_path)
             upload_preview = '/' + upload_path.replace("\\", "/")
 
-            # Optional: Clear YOLO output folders
+            # Clear YOLO output folders
             for folder in glob.glob('runs/detect/predict*'):
                 shutil.rmtree(folder)
 
@@ -101,7 +106,7 @@ def index():
                 result_message = "🧪 No microorganisms detected in this image."
                 result_image = upload_preview + f"?v={uuid.uuid4().hex}"
 
-            # Build organism_info dict with rich data
+            # Build organism_info dict
             for label in organism_counts.keys():
                 if label in explanations:
                     organism_info[label] = {
@@ -114,7 +119,6 @@ def index():
                         "interactions": explanations[label].get("interactions", [])
                     }
 
-            # Log for analytics
             log_detection_csv(uid, organism_counts)
 
     return render_template(
@@ -126,9 +130,53 @@ def index():
         explanations=organism_info
     )
 
+# ✅ OpenAI SDK client setup (using GPT-4o-mini)
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
 
+
+@app.route('/ask_ai', methods=['POST'])
+def ask_ai():
+    data = request.json
+    question = data.get('question', '')
+    context = data.get('context', '')
+    history = data.get('history', [])
+
+    system_message = {
+        "role": "system",
+        "content": (
+            "You are a helpful, scientific AI assistant focused on microbiology. "
+            "Only show calculation steps if the user explicitly asks for them. "
+            "Keep answers concise and professional, but friendly."
+        )
+    }
+
+    # Start with system message, context as a message, and then full history
+    messages = [system_message]
+
+    # Optional: inject context as a fixed message
+    messages.append({
+        "role": "user",
+        "content": f"Context: These microorganisms were detected: {context}"
+    })
+
+    # Add chat history
+    messages.extend(history)
+
+    # Add the current question
+    messages.append({"role": "user", "content": question})
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages,
+            max_tokens=500,
+            temperature=0.7,
+        )
+        answer = response.choices[0].message.content
+        return jsonify({'answer': answer})
+    except Exception as e:
+        return jsonify({'answer': f"Error: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-#correct code

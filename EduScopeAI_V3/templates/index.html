@@ -2,14 +2,53 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>EduScopeAI – Microorganism Detection</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Marked.js for Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- MathJax for LaTeX rendering -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+
   <style>
+    html,
     body {
+      height: 100%;
+      margin: 0;
       background-color: #f5f7fa;
       font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    body>.container {
+      flex: 1 0 auto;
+    }
+
+    footer {
+      background: #0d6efd;
+      color: white;
+      padding: 1rem 0;
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
+
+    /* Navbar: Only title, no links */
+    .navbar-nav {
+      display: none;
     }
 
     .app-title {
@@ -35,99 +74,171 @@
       color: #343a40;
     }
 
-    th {
-      background-color: #f1f3f5;
-      font-weight: 600;
-    }
-
-    table td {
-      vertical-align: top;
-      padding: 0.75rem;
-    }
-
-    table tr:hover {
-      background-color: #f9fcff;
-    }
-
-    .btn-ai {
-      font-size: 1.2rem;
-      padding: 0.75rem 2rem;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #0d6efd, #00bcd4);
-      color: white;
-      border: none;
-    }
-
-    .btn-ai:hover {
-      background: linear-gradient(135deg, #0056b3, #0097a7);
-    }
-
+    /* Floating AI button */
     .floating-ai-button {
       position: fixed;
       bottom: 24px;
       right: 24px;
       z-index: 1050;
-      background: linear-gradient(135deg, #0d6efd, #00bcd4);
+      background: #0d6efd;
       color: white;
       border: none;
-      padding: 0.9rem 1.3rem;
+      padding: 0.8rem 1.1rem;
       font-size: 1rem;
-      font-weight: 600;
       border-radius: 50px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: opacity 0.3s ease;
     }
 
-    .floating-ai-button:hover {
-      background: linear-gradient(135deg, #0056b3, #0097a7);
+    /* Hide button when AI panel open */
+    .floating-ai-button.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
-    ul {
-      padding-left: 1.2rem;
+    .offcanvas-end {
+      width: 400px;
     }
 
-    ul li {
+    .chatbox {
+      max-height: 65vh;
+      overflow-y: auto;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 12px;
+      border: 1px solid #dee2e6;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .chat-bubble {
+      padding: 0.8rem 1rem;
+      border-radius: 1rem;
+      max-width: 85%;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .user-bubble {
+      background-color: #d0e7ff;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+
+    .ai-bubble {
+      background-color: #e9ecef;
+      align-self: flex-start;
+      margin-right: auto;
+    }
+
+    .chat-controls {
+      margin-top: 1rem;
+    }
+
+    .table th {
+      background-color: #f1f3f5;
+      font-weight: 600;
+    }
+
+    .table td {
+      vertical-align: top;
+      padding: 0.75rem;
+    }
+
+    .table tr:hover {
+      background-color: #f9fcff;
+    }
+
+    /* Drag & drop upload area */
+    .upload-dropzone {
+      border: 3px dashed #0d6efd;
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      color: #0d6efd;
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .upload-dropzone.dragover {
+      background-color: #e7f1ff;
+      border-color: #084298;
+    }
+
+    .upload-dropzone input[type="file"] {
+      display: none;
+    }
+
+    .upload-text {
+      font-weight: 600;
+      font-size: 1.2rem;
       margin-bottom: 0.3rem;
+    }
+
+    .upload-subtext {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+
+    /* Quick question buttons */
+    .quick-questions button {
+      margin: 0.3rem 0.3rem 0.3rem 0;
     }
   </style>
 </head>
 
 <body>
-  <div class="container py-5">
-    <h1 class="text-center mb-3 app-title">🔬 EduScopeAI</h1>
-    <p class="text-center text-muted mb-4">Smart Microorganism Detection with Scientific Insights</p>
-
-    <!-- Upload Card -->
-    <div class="card card-custom p-4 mb-5">
-      <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Upload Microscope Image:</label>
-          <input class="form-control" type="file" name="image" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100 fw-bold">Detect Microorganisms</button>
-      </form>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-4">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-primary" href="#">EduScopeAI</a>
+      <!-- No navbar links for now -->
     </div>
+  </nav>
 
-    <!-- Images -->
+  <!-- Main container -->
+  <div class="container py-5">
+    <!-- Title -->
+    <h1 class="text-center mb-3 app-title">🔬 EduScopeAI</h1>
+    <p class="text-center text-muted mb-5">Smart Microorganism Detection with Scientific Insights</p>
+
+    <!-- Upload form with drag & drop -->
+    <section id="upload-section" class="card card-custom p-4 mb-5">
+      <form method="POST" enctype="multipart/form-data" novalidate id="upload-form">
+        <label for="image-upload" class="form-label fw-semibold">Upload Microscope Image:</label>
+        <div id="dropzone" class="upload-dropzone">
+          <div class="upload-text">Drag & Drop your PNG or JPEG file here</div>
+          <div class="upload-subtext">or click to select a file</div>
+          <input id="image-upload" class="form-control" type="file" name="image" accept="image/png, image/jpeg"
+            required />
+        </div>
+        <div id="file-name" class="mt-3 text-center text-truncate"></div>
+        <button type="submit" class="btn btn-primary w-100 fw-bold mt-4">Detect Microorganisms</button>
+      </form>
+    </section>
+
+    <!-- Display uploaded and result images -->
     {% if upload_image and result_image %}
-    <div class="row mb-5">
+    <section id="results-section" class="row mb-5">
       <div class="col-md-6">
         <h5 class="section-title">Uploaded Image</h5>
-        <img src="{{ upload_image }}" alt="Uploaded" class="preview-img">
+        <img src="{{ upload_image }}" alt="Uploaded" class="preview-img" />
       </div>
       <div class="col-md-6">
         <h5 class="section-title">Detection Result</h5>
-        <img src="{{ result_image }}" alt="Predicted" class="preview-img">
+        <img src="{{ result_image }}" alt="Predicted" class="preview-img" />
       </div>
-    </div>
+    </section>
     {% endif %}
 
-    <!-- Result Section -->
+    <!-- Detection Results Table -->
     {% if result %}
-    <div class="card card-custom p-4">
+    <section class="card card-custom p-4 mb-5">
       <h5 class="mb-3 text-primary">{{ result }}</h5>
 
       {% if counts and explanations %}
@@ -137,7 +248,7 @@
             <tr>
               <th>Microorganism</th>
               <th>Count</th>
-              <th>Category 🧬</th>
+              <th>Category</th>
               <th>Habitat</th>
               <th>Description</th>
               <th>Interactions</th>
@@ -148,16 +259,13 @@
             {% set info = explanations[label] %}
             <tr>
               <td>
-                <strong>{{ info.common_name }}</strong><br>
+                <strong>{{ info.common_name }}</strong><br />
                 <span class="text-muted" style="font-size: 0.9em;">({{ info.scientific_name }})</span>
               </td>
               <td>{{ count }}</td>
-              <td>
-                {% if "Protist" in info.category %}🧬{% elif "Bacteria" in info.category %}🦠{% elif "Fungus" in info.category %}🍄{% else %}🔍{% endif %}
-                {{ info.category }}
-              </td>
+              <td>{{ info.category }}</td>
               <td>{{ info.habitat }}</td>
-              <td><p class="mb-0">{{ info.description }}</p></td>
+              <td>{{ info.description }}</td>
               <td>
                 {% if info.interactions %}
                 <ul class="mb-0">
@@ -175,33 +283,225 @@
         </table>
       </div>
       {% endif %}
-    </div>
+    </section>
+    {% endif %}
 
-    <!-- Floating Ask AI Button -->
+    <!-- Floating AI Button -->
+    {% if result %}
     <button type="button" class="floating-ai-button" data-bs-toggle="offcanvas" data-bs-target="#aiPanel"
-      aria-controls="aiPanel">
+      aria-controls="aiPanel" id="floatingAiBtn">
       🤖 Ask AI
     </button>
     {% endif %}
+
+    <!-- About Section above footer -->
+    <section id="about" class="card card-custom p-4 mb-5 bg-white shadow-sm">
+      <h4 class="mb-3 text-primary">About EduScopeAI</h4>
+      <p>
+        EduScopeAI is designed to assist educators and researchers in identifying microorganisms through smart detection
+        and insightful AI-powered explanations. Our mission is to empower science education with advanced
+        technologies.
+      </p>
+      <p>
+        Contact us at <a href="mailto:support@eduscopeai.com">support@eduscopeai.com</a> or visit our
+        <a href="https://yourwebsite.com" target="_blank">website</a>.
+      </p>
+    </section>
   </div>
 
-  <!-- Offcanvas Panel -->
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="aiPanel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title">EduScopeAI Assistant</h5>
-      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+  <!-- Offcanvas AI Assistant Panel -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="aiPanel" aria-labelledby="aiPanelLabel">
+    <div class="offcanvas-header border-bottom">
+      <h5 class="offcanvas-title" id="aiPanelLabel">EduScopeAI Assistant</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body">
-      <p>This panel can be connected to your AI backend to show more detailed insights.</p>
-      <p class="text-muted">Example:</p>
-      <div class="alert alert-info">
-        <strong>Q:</strong> What is the role of Amoeba in freshwater ecosystems?<br>
-        <strong>A:</strong> Amoebas consume bacteria and algae, playing a crucial role in nutrient cycling and microbial population control.
+    <div class="offcanvas-body d-flex flex-column">
+      <!-- Chat log -->
+      <div class="chatbox" id="chat-log"></div>
+
+      <!-- Quick Questions for easy user clicks -->
+      <div class="quick-questions mt-3">
+        <strong>Try one of these questions:</strong><br />
+        <button class="btn btn-outline-primary btn-sm"
+          data-question="Which microorganism is most abundant in the sample?">
+          Most Abundant Microorganism
+        </button>
+        <button class="btn btn-outline-primary btn-sm"
+          data-question="Can you give me a brief description of each detected microorganism?">
+          Brief Description
+        </button>
+        <button class="btn btn-outline-primary btn-sm"
+          data-question="What habitats are these microorganisms usually found in?">
+          Habitats Overview
+        </button>
+        <button class="btn btn-outline-primary btn-sm"
+          data-question="Are there any interesting relationships or interactions among these microorganisms?">
+          Possible Interactions
+        </button>
+        <button class="btn btn-outline-primary btn-sm"
+          data-question="What can you infer from the quantities of these microorganisms?">
+          Interpretation of Counts
+        </button>
+      </div>
+
+
+      <!-- User input -->
+      <div class="chat-controls mt-3">
+        <textarea id="ai-question" class="form-control mb-2" rows="2" placeholder="Ask a question..."></textarea>
+        <button id="ai-ask-btn" class="btn btn-primary w-100">Send</button>
       </div>
     </div>
   </div>
 
+  <!-- Bootstrap JS bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Drag & Drop file upload handling
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('image-upload');
+    const fileNameDisplay = document.getElementById('file-name');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (!['image/png', 'image/jpeg'].includes(file.type)) {
+          alert('Only PNG and JPEG files are allowed.');
+          return;
+        }
+        fileInput.files = files;
+        fileNameDisplay.textContent = file.name;
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        if (!['image/png', 'image/jpeg'].includes(file.type)) {
+          alert('Only PNG and JPEG files are allowed.');
+          fileInput.value = '';
+          fileNameDisplay.textContent = '';
+          return;
+        }
+        fileNameDisplay.textContent = file.name;
+      } else {
+        fileNameDisplay.textContent = '';
+      }
+    });
+
+    // Floating AI Button hide/show on Offcanvas toggle
+    const aiBtn = document.getElementById('floatingAiBtn');
+    const aiPanel = document.getElementById('aiPanel');
+
+    if (aiBtn && aiPanel) {
+      aiPanel.addEventListener('show.bs.offcanvas', () => {
+        aiBtn.classList.add('hidden');
+      });
+
+      aiPanel.addEventListener('hidden.bs.offcanvas', () => {
+        aiBtn.classList.remove('hidden');
+      });
+    }
+
+  </script>
+
+  {% if counts %}
+  <script>
+    const contextData = JSON.parse('{{ counts | tojson | safe }}');
+    const chatHistory = [];
+
+    const chatLog = document.getElementById('chat-log');
+    const questionInput = document.getElementById('ai-question');
+    const askBtn = document.getElementById('ai-ask-btn');
+    const quickQuestionBtns = document.querySelectorAll('.quick-questions button');
+
+    // Utility: append message bubble
+    function appendBubble(text, isUser = true) {
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble ' + (isUser ? 'user-bubble' : 'ai-bubble');
+      bubble.textContent = text;
+      chatLog.appendChild(bubble);
+      chatLog.scrollTop = chatLog.scrollHeight;
+      return bubble;
+    }
+
+    // Send question to AI
+    async function sendQuestion(question) {
+      if (!question.trim()) return;
+
+      // Add user bubble
+      appendBubble(question, true);
+      chatHistory.push({ role: 'user', content: question });
+
+      // Add AI thinking bubble
+      const aiBubble = appendBubble('🤖 Thinking...', false);
+
+      try {
+        const resp = await fetch('/ask_ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            context: JSON.stringify(contextData),
+            history: chatHistory
+          })
+        });
+
+        const data = await resp.json();
+
+        // Render Markdown and insert
+        aiBubble.innerHTML = `<strong>AI:</strong><br>${marked.parse(data.answer)}`;
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+        // Add to history
+        chatHistory.push({ role: 'assistant', content: data.answer });
+
+        // Re-render MathJax if present
+        if (window.MathJax) MathJax.typesetPromise([aiBubble]);
+      } catch (err) {
+        aiBubble.innerHTML = `<span class="text-danger">Error: ${err.message}</span>`;
+      }
+    }
+
+    // Button send event
+    askBtn.addEventListener('click', () => {
+      const question = questionInput.value.trim();
+      sendQuestion(question);
+      questionInput.value = '';
+    });
+
+    // Enter key triggers send
+    questionInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        askBtn.click();
+      }
+    });
+
+    // Quick questions buttons event
+    quickQuestionBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const question = btn.getAttribute('data-question');
+        questionInput.value = question;
+        askBtn.click();
+      });
+    });
+  </script>
+  {% endif %}
 </body>
 
 </html>
