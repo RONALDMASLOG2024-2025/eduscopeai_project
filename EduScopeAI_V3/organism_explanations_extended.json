@@ -1,0 +1,90 @@
+{
+  "Amoeba": {
+    "common_name": "Amoeba",
+    "scientific_name": "Amoeba proteus",
+    "category": "Protist",
+    "habitat": "Freshwater ponds and moist soil",
+    "description": "Amoeba is a shapeless, single-celled organism that moves using pseudopodia. It surrounds and engulfs food particles like bacteria using phagocytosis.",
+    "interactions": [
+      "Competes with Paramecium for bacterial food",
+      "Can be prey for larger organisms like Hydra"
+    ]
+  },
+  "Euglena": {
+    "common_name": "Euglena",
+    "scientific_name": "Euglena gracilis",
+    "category": "Protist (Plant-like)",
+    "habitat": "Stagnant freshwater rich in organic matter",
+    "description": "Euglena is a unique microorganism that shows both plant and animal traits. It has chloroplasts to perform photosynthesis and a flagellum to move around.",
+    "interactions": [
+      "Competes with other microorganisms for light and nutrients",
+      "Can coexist with bacteria and algae"
+    ]
+  },
+  "Hydra": {
+    "common_name": "Hydra",
+    "scientific_name": "Hydra vulgaris",
+    "category": "Cnidarian",
+    "habitat": "Clean, still freshwater bodies like ponds and streams",
+    "description": "Hydra is a tiny freshwater predator with tentacles. It captures prey like Paramecium and Amoeba using stinging cells (nematocysts).",
+    "interactions": [
+      "Feeds on Paramecium and Amoeba",
+      "Plays a role in controlling population of smaller protists"
+    ]
+  },
+  "Paramecium": {
+    "common_name": "Paramecium",
+    "scientific_name": "Paramecium caudatum",
+    "category": "Protist",
+    "habitat": "Freshwater environments with decaying organic matter",
+    "description": "Paramecium is a slipper-shaped microorganism that moves using cilia. It feeds on bacteria and small particles, digesting them in food vacuoles.",
+    "interactions": [
+      "Preyed upon by Hydra",
+      "Competes with Amoeba for food sources"
+    ]
+  },
+  "Rod_bacteria": {
+    "common_name": "Rod-shaped Bacteria (Bacilli)",
+    "scientific_name": "Various (e.g., Bacillus subtilis)",
+    "category": "Bacteria",
+    "habitat": "Soil, water, and animal intestines",
+    "description": "Rod-shaped bacteria are common microorganisms that help break down organic matter. Some are beneficial, while others can cause disease.",
+    "interactions": [
+      "Consumed by Paramecium and Amoeba",
+      "Decompose organic waste in water"
+    ]
+  },
+  "Spherical_bacteria": {
+    "common_name": "Spherical Bacteria (Cocci)",
+    "scientific_name": "Various (e.g., Staphylococcus aureus)",
+    "category": "Bacteria",
+    "habitat": "Water, soil, and living hosts",
+    "description": "Spherical bacteria may exist as single cells or in clusters. Some are harmless, while others are involved in infections.",
+    "interactions": [
+      "Consumed by protists like Amoeba and Paramecium",
+      "Form colonies in aquatic systems"
+    ]
+  },
+  "Spiral_bacteria": {
+    "common_name": "Spiral Bacteria (Spirilla)",
+    "scientific_name": "Spirillum volutans (example)",
+    "category": "Bacteria",
+    "habitat": "Stagnant freshwater and sewage",
+    "description": "These spiral-shaped bacteria move with flagella and thrive in aquatic habitats. Some are involved in nitrogen fixation.",
+    "interactions": [
+      "Consumed by filter-feeding protists",
+      "Compete with other bacteria for nutrients"
+    ]
+  },
+  "Yeast": {
+    "common_name": "Yeast",
+    "scientific_name": "Saccharomyces cerevisiae",
+    "category": "Fungus",
+    "habitat": "Moist surfaces, sugary environments",
+    "description": "Yeasts are single-celled fungi that reproduce by budding. They are used in baking and fermentation, and can sometimes colonize microscope slides.",
+    "interactions": [
+      "Decompose sugars and organic matter",
+      "Coexist with bacteria in nutrient-rich samples"
+    ]
+  }
+}

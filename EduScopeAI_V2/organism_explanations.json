@@ -1,0 +1,34 @@
+{
+  "Amoeba": {
+    "title": "Amoeba",
+    "description": "Amoeba is a shapeless, single-celled organism that moves using pseudopodia, which are temporary projections of cytoplasm. It engulfs food through a process called phagocytosis."
+  },
+  "Euglena": {
+    "title": "Euglena",
+    "description": "Euglena is a single-celled organism with characteristics of both plants and animals. It has a flagellum for movement and can photosynthesize using chloroplasts."
+  },
+  "Hydra": {
+    "title": "Hydra",
+    "description": "Hydra is a small, freshwater organism with tentacles. It belongs to the phylum Cnidaria and is known for its regenerative abilities."
+  },
+  "Paramecium": {
+    "title": "Paramecium",
+    "description": "Paramecium is a ciliated protozoan commonly found in freshwater. It moves using thousands of tiny cilia and feeds on bacteria and other small particles."
+  },
+  "Rod_bacteria": {
+    "title": "Rod Bacteria (Bacilli)",
+    "description": "Rod-shaped bacteria, also called bacilli, are common in soil and water. Some are beneficial, while others can cause diseases in plants, animals, and humans."
+  },
+  "Spherical_bacteria": {
+    "title": "Spherical Bacteria (Cocci)",
+    "description": "Spherical bacteria, or cocci, have a round shape and may appear singly or in groups. Some are harmless, while others are responsible for diseases like strep throat."
+  },
+  "Spiral_bacteria": {
+    "title": "Spiral Bacteria (Spirilla)",
+    "description": "Spiral bacteria have a twisted or helical shape. Some are motile and can move through viscous environments. They are often found in aquatic habitats."
+  },
+  "Yeast": {
+    "title": "Yeast",
+    "description": "Yeasts are unicellular fungi that reproduce by budding. They play essential roles in fermentation and are used in baking, brewing, and biotechnology."
+  }
+}
