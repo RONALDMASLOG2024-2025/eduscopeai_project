@@ -154,8 +154,3 @@ eduscopeai/
 
 This project is for educational and academic purposes only.
 Please cite or link back if you use it in your research or classroom.
-
-```
-
-Let me know if you'd like to include a demo GIF, model output samples, or a sample image in the README too! I can help you add [badges](f), a [sample image section](f), or [deployment instructions](f) as well.
-```
