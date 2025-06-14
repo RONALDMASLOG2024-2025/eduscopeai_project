@@ -1,16 +1,10 @@
-Sure! Below is the complete code for the README.md file formatted properly for inclusion in your GitHub repository.
 
-Create a file named README.md in the root of your project directory and paste the following content:
-
-README.md
-
-````markdown
 # EduScopeAI 🧫🔍  
 An Image-Based AI System for Educational Microorganism Detection
 
 EduScopeAI is a web-based platform that utilizes YOLOv8 (You Only Look Once) object detection along with OpenAI’s language model (GPT-4) to detect and identify common microorganisms from microscope images. Designed for students, teachers, and life science educators, the system not only identifies organisms but also provides educational descriptions to promote deeper understanding.
 
----
+
 
 ## 📦 Features
 
@@ -28,34 +22,34 @@ EduScopeAI is a web-based platform that utilizes YOLOv8 (You Only Look Once) obj
 - 🖼 Upload an image → Get annotated results + AI-generated description
 - 📊 Includes model performance metrics: Precision, Recall, mAP, Confusion Matrix
 
----
+
 
 ## 🚀 Getting Started
 
 ### 1. Clone the repository
 
-```bash
+
 git clone https://github.com/your-username/eduscopeai.git
 cd eduscopeai
-````
+
 
 ### 2. Set up your environment
 
 Make sure you have Python 3.8+ and pip installed.
 
-```bash
+
 python -m venv venv
 source venv/bin/activate   # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-```
+
 
 ### 3. Place the trained model
 
 Place your best.pt (YOLOv8 trained weights) file inside a folder named model/:
 
-```
+
 model/best.pt
-```
+
 
 Or update the path in app.py to match where your model is stored.
 
@@ -63,9 +57,9 @@ Or update the path in app.py to match where your model is stored.
 
 Create a .env file in the project root:
 
-```
+
 OPENAI_API_KEY=your_openai_api_key_here
-```
+
 
 This enables educational explanations powered by GPT.
 
